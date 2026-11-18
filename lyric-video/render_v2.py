@@ -109,6 +109,20 @@ def sprite(word, kind):
         else: cache[key] = grad_text(word, f_next, (255, 255, 255), (255, 255, 255))
     return cache[key]
 
+def make_credit():
+    f1 = F("Poppins-Light.ttf", 30); f2 = F("Poppins-SemiBold.ttf", 34)
+    t1, t2 = "EDIT BY  ", "MORSALIN"
+    sp = 6
+    w1 = sum(f1.getlength(c) + sp for c in t1); w2 = sum(f2.getlength(c) + sp for c in t2)
+    im = Image.new("RGBA", (int(w1 + w2 + 120), 90), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([4, 10, im.width - 4, 80], 35, fill=(0, 0, 0, 90), outline=(255, 200, 120, 160), width=2)
+    x = 60
+    for c in t1:
+        d.text((x, 45), c, font=f1, fill=(255, 255, 255, 210), anchor="lm"); x += f1.getlength(c) + sp
+    for c in t2:
+        d.text((x, 45), c, font=f2, fill=(255, 214, 120, 255), anchor="lm"); x += f2.getlength(c) + sp
+    return im
+CREDIT = make_credit()
 title_bn = grad_text("শুধু তোমাকে", f_bn_title, (255, 230, 150), (255, 110, 160))
 
 def paste_alpha(base, img, x0, y0, alpha=1.0, scale=1.0):
@@ -219,6 +233,10 @@ def frame(t):
     for c in txt:
         d2.text((xa, ty + 70), c, font=f_artist, fill=(255, 255, 255, int(200 * intro)))
         xa += f_artist.getlength(c) + sp
+
+    # --- credit ---
+    ca = ease((t - 0.4) / 0.8)
+    paste_alpha(ov, CREDIT, (W - CREDIT.width) / 2, 92 - CREDIT.height / 2, alpha=ca * 0.92)
 
     # --- lyrics (kinetic, word by word) ---
     LY = 1420
