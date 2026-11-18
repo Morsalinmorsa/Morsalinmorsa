@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="2.2"
+        android:scaleY="2.2"
+        android:translateX="27.6"
+        android:translateY="27.6">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z" />
+    </group>
+    <!-- lightning bolt for "turbo" -->
+    <path
+        android:fillColor="#FFFFC107"
+        android:pathData="M74,30 L64,48 L71,48 L66,62 L79,42 L72,42 L77,30 Z" />
+</vector>

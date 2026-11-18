@@ -1,0 +1,12 @@
+<resources>
+    <color name="brand_primary">#00796B</color>
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_primary_container">#B2DFDB</color>
+    <color name="brand_on_primary_container">#00201C</color>
+    <color name="brand_secondary">#F4511E</color>
+    <color name="launcher_background">#00796B</color>
+    <color name="seg_track">#1F000000</color>
+    <color name="seg_fill">#00897B</color>
+    <color name="seg_paused">#8000897B</color>
+    <color name="seg_error">#D32F2F</color>
+</resources>

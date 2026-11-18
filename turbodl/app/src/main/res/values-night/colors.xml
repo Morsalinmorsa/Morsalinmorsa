@@ -1,0 +1,11 @@
+<resources>
+    <color name="brand_primary">#4DB6AC</color>
+    <color name="brand_on_primary">#003731</color>
+    <color name="brand_primary_container">#005048</color>
+    <color name="brand_on_primary_container">#B2DFDB</color>
+    <color name="brand_secondary">#FF8A65</color>
+    <color name="seg_track">#2EFFFFFF</color>
+    <color name="seg_fill">#4DB6AC</color>
+    <color name="seg_paused">#804DB6AC</color>
+    <color name="seg_error">#EF9A9A</color>
+</resources>
