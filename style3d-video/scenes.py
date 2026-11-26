@@ -213,12 +213,12 @@ if SCN == 0:   # intro: title in block letters, a work light flickers on
     t2 = word_obj("FRANKLIN", "Poppins-SemiBold.ttf", 22, 0.42, 2, m2, "sub"); t2.location = (0, 0, -0.55)
     fl = bpy.data.objects.new("floor", bpy.data.meshes.new("f")); sc.collection.objects.link(fl)
     bpy.ops.mesh.primitive_plane_add(size=40, location=(0, 0, -1.2)); bpy.context.object.data.materials.append(mat_col("fl", (0.05, 0.05, 0.06), rough=0.25))
-    lt = light("SPOT", (0, -5, 4), 900, (1, 0.9, 0.75), look_rot((0, -5, 4), (0, 0, 0)), 0.3, math.radians(55))
+    lt = light("SPOT", (0, -7, 4), 1600, (1, 0.9, 0.75), look_rot((0, -7, 4), (0, 0, 0)), 0.3, math.radians(95))
     for i, v in enumerate([0, 1, 0, 0, 1, 1, 0, 1, 1, 1]):
-        lt.data.energy = 900 * v; lt.data.keyframe_insert("energy", frame=1 + i * 3)
+        lt.data.energy = 1600 * v; lt.data.keyframe_insert("energy", frame=1 + i * 3)
     for c in lt.data.animation_data.action.fcurves:
         for kp in c.keyframe_points: kp.interpolation = "CONSTANT"
-    camera((0.4, -11.5, 0.9), (0, -9.0, 0.4), (0, 0, 0), lens=40, shake=0.015)
+    camera((0.4, -14.0, 1.0), (0, -11.5, 0.5), (0, 0, 0), lens=40, shake=0.015)
 
 elif SCN == 1:   # lantern night
     world_color((0.008, 0.01, 0.04), 1)
@@ -393,8 +393,24 @@ elif SCN == 8:   # typewriter: letters appear one by one on a dark desk, blinkin
         cur.hide_render = (f // 8) % 2 == 1; cur.keyframe_insert("hide_render", frame=f)
     key(cur, 1, loc=(-3.5, 0, 0)); key(cur, F(tt) + 2, loc=(last[1] + 0.1, 0, 0)); interp(cur, "LINEAR")
     light("SPOT", (-1, -3, 4), 900, (1, 0.92, 0.8), look_rot((-1, -3, 4), (0, 0, 0.5)), 0.6, math.radians(80))
-    camera((-2.0, -9.5, 1.6), (0.8, -8.0, 1.2), (0, 0, 0.5), lens=40, shake=0.012)
+    camera((-2.0, -11.5, 1.8), (0.6, -10.0, 1.3), (0, 0, 0.5), lens=40, shake=0.012)
 
+if os.environ.get("BTS"):   # real behind-the-scenes view: Blender solid viewport look, wide orbiting "custom view" camera
+    import mathutils
+    sc.render.engine = "BLENDER_WORKBENCH"; sh = sc.display.shading
+    sh.light = "STUDIO"; sh.color_type = "RANDOM"; sh.show_cavity = True; sh.show_object_outline = True
+    sh.show_shadows = True; sh.background_type = "VIEWPORT" if hasattr(sh, "background_type") else sh.background_type
+    main = sc.camera; tg = main.constraints[0].target
+    cd = bpy.data.cameras.new("CV"); cd.lens = 22; cv = bpy.data.objects.new("CV", cd); sc.collection.objects.link(cv)
+    con = cv.constraints.new("TRACK_TO"); con.target = tg; con.track_axis = "TRACK_NEGATIVE_Z"; con.up_axis = "UP_Y"
+    base = mathutils.Vector(main.location) - mathutils.Vector(tg.location)
+    r = max(base.length * 1.25, 8)
+    for f in (1, NF):
+        a = math.radians(-60 + 70 * (f - 1) / max(NF - 1, 1))
+        cv.location = (tg.location[0] + r * math.sin(a), tg.location[1] - r * math.cos(a), tg.location[2] + r * 0.55); cv.keyframe_insert("location", frame=f)
+    # show the real render camera as a small marker + its view line
+    mk = voxel_obj("cam_marker", {(0, 0, 0): (0, 0, 0)}, 0.35, [mat_col("mk", (1, 0.2, 0.2))], origin=(-0.17, -0.17, -0.17)); mk.parent = main
+    sc.camera = cv
 os.makedirs(OUTD, exist_ok=True)
 sc.render.filepath = os.path.join(OUTD, "f_####")
 if ONLY:
