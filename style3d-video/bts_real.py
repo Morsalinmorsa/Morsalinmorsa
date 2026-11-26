@@ -8,7 +8,7 @@ a = sys.argv[1:]; BD, SONG, OUT = a[0], a[1], a[2]
 PREVIEW = [float(v) for v in a[a.index("--preview") + 1].split(",")] if "--preview" in a else None
 O, FPS, DUR = 1080, 30, 30.0
 SONG_START = 78.0 + 36.5
-NAMES = ["intro", "lantern night", "shadow wall", "block heart", "night city", "sunrise hills", "vinyl record", "neon", "typewriter"]
+NAMES = ["intro", "lantern night", "stone hall", "heart hall", "night city", "sunrise valley", "record player", "neon club", "typewriter"]
 TOOK = {int(m.group(1)): int(m.group(2)) for m in re.finditer(r"scene (\d) took (\d+)s", open(os.path.join(BD, "render.log")).read())}
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"; MONOB = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 f_card = ImageFont.truetype(MONO, 140); f_lab = ImageFont.truetype(MONOB, 26); f_inf = ImageFont.truetype(MONO, 22); f_end = ImageFont.truetype(MONO, 46)
