@@ -95,8 +95,8 @@ def frame(t):
         d.text((40, 40), "Tum Bin", font=f1, fill=(255, 255, 255, int(235 * al))); d.text((40, 92), "Tanveer Evan", font=f2, fill=(255, 255, 255, int(200 * al)))
     if t > 29.6:
         al = smooth((t - 29.6) / 0.5)
-        d.text((O / 2, 120), "Edit by Morsalin", font=f1, fill=(255, 255, 255, int(240 * al)), anchor="mm")
-        d.text((O / 2, 170), "Tum Bin · Tanveer Evan", font=f2, fill=(255, 255, 255, int(200 * al)), anchor="mm")
+        d.text((40, 40), "Edit by Morsalin", font=f1, fill=(255, 255, 255, int(240 * al)))
+        d.text((40, 92), "Tum Bin · Tanveer Evan", font=f2, fill=(255, 255, 255, int(200 * al)))
     img = np.asarray(pil.convert("RGB"), np.float32)
     if t > DUR - 0.5: img = img * max(0, (DUR - t) / 0.5)
     return np.clip(img, 0, 255).astype(np.uint8)

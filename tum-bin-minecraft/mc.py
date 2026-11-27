@@ -152,6 +152,7 @@ def light(kind, loc, energy, col=(1, 1, 1), rot=(0, 0, 0), size=0.5, spot=None):
     ld = bpy.data.lights.new("L", kind); ld.energy = energy; ld.color = col
     if kind in ("POINT", "SPOT", "AREA"): ld.shadow_soft_size = size
     if kind == "SPOT" and spot: ld.spot_size = spot
+    setattr_safe(ld, "use_contact_shadow", True); setattr_safe(ld, "contact_shadow_distance", 0.35); setattr_safe(ld, "contact_shadow_thickness", 0.08)
     ob = bpy.data.objects.new("L", ld); sc.collection.objects.link(ob); ob.location = loc; ob.rotation_euler = rot
     return ob
 def look_rot(src, dst):
@@ -352,7 +353,7 @@ def house(cells, x0, y0, w=5, d=5, h=4, wall=0, base=1, roof=2, glass=3, door=Tr
 # ======================= 3D lyrics that ride with the camera =======================
 def lyrics(cam, col=(1.0, 0.95, 0.85), emit=0.6, y0=-0.95, dist=4.0):
     if not os.environ.get('LYR3D'):
-        sh = light('AREA', (0, 0, 0), 30, (1, 1, 1), size=3); sh.parent = cam; sh.location = (0, -1.5, -2.5); return
+        sh = light('AREA', (0, 0, 0), 9, (1, 1, 1), size=3); sh.parent = cam; sh.location = (0, -1.5, -2.5); return
     m = mat_col("lyr", col, emit=emit, rough=0.4)
     words = L["words"]; n = len(words)
     rows = [list(range(n))] if n <= 4 else [list(range((n + 1) // 2)), list(range((n + 1) // 2, n))]
@@ -426,8 +427,9 @@ elif SCN == 3:   # night, alone at a campfire
     voxel_obj("moon", {(x, 0, z): (0, 0, 0) for x in range(3) for z in range(3)}, 1.0, [mat_col("moon", (0.9, 0.92, 1.0), emit=8)], origin=(-8, 30, 12))
     light("SUN", (0, 0, 10), 0.15, (0.5, 0.6, 1.0), rot=(0.7, 0.2, 0.5))
     st = character("steve", STEVE, "steve", (-0.6, -0.2, 0), math.radians(113)); sit(st)
-    for f, (y, p) in ((1, (0, 0.2)), (60, (0, -0.35)), (NF, (math.radians(15), -0.4))): look(st, f, y, p)
-    cam = cam_track((2.4, -2.6, 1.3), (1.4, -3.2, 1.6), (-0.3, 0.0, 0.8), (0.1, 0.1, 0.9), lens=32)
+    for f, (y, p) in ((1, (0, 0.18)), (60, (math.radians(-8), 0.05)), (NF, (math.radians(10), -0.08))): look(st, f, y, p)
+    for a in ("armL", "armR"): st[a].rotation_euler = (math.radians(-55), 0, 0)
+    cam = cam_track((2.0, -1.4, 1.05), (1.5, -2.1, 1.3), (-0.4, -0.1, 0.75), (-0.1, 0.0, 0.85), lens=32)
     light('AREA', (-2, -3, 3), 40, (0.55, 0.65, 1.0), look_rot((-2, -3, 3), (-0.6, -0.2, 0.6)), 3)
     lyrics(cam, col=(1.0, 0.85, 0.6))
 
@@ -460,11 +462,12 @@ elif SCN == 5:   # alone in the rain under a street lamp
     bc = {}
     for i, x in enumerate(range(-14, 14, 6)): house(bc, x, 8, 5, 4, 5, door=False)
     voxel_obj("houses", bc, 1.0, [mat_tex("stone", "stone"), mat_tex("cobble", "cobble"), mat_tex("log", "log"), mat_tex("build", "build", emit=1.5)])
-    falling("rain", 260, ((-5, 5), (-3, 6)), 7, 0, 0.03, mat_col("drop", (0.7, 0.8, 1.0), emit=0.6, rough=0.1), 14, stretch=8)
+    falling("rain", 220, ((-5, 5), (-1.2, 6)), 7, 0, 0.03, mat_col("drop", (0.7, 0.8, 1.0), emit=0.6, rough=0.1), 14, stretch=8)
     light("SUN", (0, 0, 10), 0.2, (0.5, 0.6, 1.0), rot=(0.6, 0.3, 0.4))
     st = character("steve", STEVE, "steve", (0.4, 0.4, 0), math.radians(-20))
-    look(st, 1, 0, 0.35); look(st, NF, math.radians(-10), 0.45)
-    cam = cam_track((-2.5, -5.5, 1.2), (-1.0, -4.0, 1.5), (0.4, 0.6, 1.2), (0.4, 0.6, 1.4), lens=34)
+    look(st, 1, 0, 0.08); look(st, NF, math.radians(-10), 0.12)
+    light('AREA', (-1.5, -2.5, 1.8), 25, (1.0, 0.8, 0.55), look_rot((-1.5, -2.5, 1.8), (0.4, 0.4, 1.4)), 1.5)
+    cam = cam_track((-1.7, -3.7, 1.35), (-0.7, -2.7, 1.6), (0.4, 0.5, 1.25), (0.4, 0.5, 1.4), lens=35)
     lyrics(cam, col=(0.85, 0.92, 1.0))
 
 elif SCN == 6:   # running through the village to find her
@@ -482,7 +485,7 @@ elif SCN == 6:   # running through the village to find her
     light("SUN", (0, 0, 10), 3.0, (1.0, 0.7, 0.5), rot=(math.radians(65), 0, math.radians(160)))
     st = character("steve", STEVE, "steve", (0.5, 12, 0), math.radians(0))
     move(st, 1, NF, (0.5, 14, 0), (0.5, 2, 0)); swing(st, 1, NF, 0.95, 10)
-    cam = cam_track((1.8, 3.5, 1.6), (1.8, -5.5, 1.8), (0.5, 14, 1.2), (0.5, 2, 1.2), lens=30, shake=0.035)
+    cam = cam_track((1.3, 10.6, 1.45), (1.3, -1.3, 1.55), (0.5, 14, 1.1), (0.5, 2, 1.1), lens=32, shake=0.03)
     lyrics(cam)
 
 elif SCN == 7:   # they meet on a bridge at sunset
@@ -507,14 +510,16 @@ elif SCN == 7:   # they meet on a bridge at sunset
 elif SCN == 8:   # together on a hill, hearts floating up, camera pulls back
     world_color((1.0, 0.4, 0.22), 0.85)
     cells = {}; terrain_cells(cells, 40, 30, 1, 1.2, -20, 4, seed=8)
-    box(cells, -4, -4, 0, 9, 7, 3, (0, 1, 1))
+    box(cells, -9, -7, 0, 19, 15, 3, (0, 1, 1))
     voxel_obj("hill", cells, 1.0, GR(), origin=(0, 0, -3))
     light("SUN", (0, 0, 10), 3.0, (1.0, 0.6, 0.4), rot=(math.radians(80), 0, math.radians(180)))
-    st = character("steve", STEVE, "steve", (-0.4, 2.9, 0.75), math.radians(180)); sit(st)
-    al = character("alex", ALEX, "alex", (0.4, 2.9, 0.75), math.radians(180)); sit(al)
-    look(st, 1, 0); look(st, 30, math.radians(-40)); look(al, 1, 0); look(al, 40, math.radians(40))
-    for i in range(6): rising_heart(f"h{i}", (rnd.uniform(-0.8, 0.8), 3.2, 2.0), 8 + i * 12, min(NF, 8 + i * 12 + 50), 0.05)
-    cam = cam_track((1.7, 0.4, 1.5), (2.4, -2.8, 2.3), (0, 2.9, 1.0), (0, 4.5, 1.3), lens=32, shake=0.015)
+    st = character("steve", STEVE, "steve", (-0.6, 2.0, 0.75), 0); sit(st)
+    al = character("alex", ALEX, "alex", (0.6, 2.0, 0.75), 0); sit(al)
+    for c in (st, al):
+        for a in ("armL", "armR"): c[a].rotation_euler = (math.radians(-50), 0, 0)
+    look(st, 1, 0); look(st, 30, math.radians(25)); look(al, 1, 0); look(al, 40, math.radians(-25))
+    for i in range(6): rising_heart(f"h{i}", (rnd.uniform(-0.3, 0.3), 2.1, 1.75), 8 + i * 12, min(NF, 8 + i * 12 + 50), 0.05)
+    cam = cam_track((0.9, -1.5, 1.15), (1.5, -4.2, 2.0), (0, 2.0, 0.85), (0, 2.5, 1.35), lens=32, shake=0.015)
     lyrics(cam, col=(1.0, 0.92, 0.85))
 
 
@@ -525,7 +530,7 @@ def shaders():
     ee = sc.eevee
     for k_, v_ in dict(use_volumetric_lights=True, use_volumetric_shadows=True, volumetric_tile_size="8", volumetric_samples=16,
                        volumetric_end=120.0, shadow_cube_size="2048", shadow_cascade_size="4096", use_shadow_high_bitdepth=True,
-                       gtao_distance=2.0, gtao_factor=1.4, bloom_intensity=0.09, bloom_threshold=0.8, bloom_radius=6.5,
+                       gtao_distance=1.5, gtao_factor=1.8, use_gtao=True, use_gtao_bent_normals=True, use_soft_shadows=True, light_threshold=0.005, bloom_intensity=0.09, bloom_threshold=0.8, bloom_radius=6.5,
                        use_ssr_refraction=True, use_motion_blur=True, motion_blur_shutter=0.45, taa_render_samples=10).items():
         setattr_safe(ee, k_, v_)
     nt = world.node_tree; bg = nt.nodes["Background"]
