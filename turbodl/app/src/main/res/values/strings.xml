@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">TurboDL</string>
+    <string name="new_download">New download</string>
+    <string name="download">Download</string>
+    <string name="url_hint">Link (URL)</string>
+    <string name="name_hint">File name (optional)</string>
+    <string name="invalid_url">Enter a link starting with http:// or https://</string>
+    <string name="threads_label">Connections per file: %1$d</string>
+    <string name="parallel_label">Files at the same time: %1$d</string>
+    <string name="settings">Settings</string>
+    <string name="save">Save</string>
+    <string name="settings_hint">More connections usually means faster downloads. Some servers limit how many they allow.</string>
+    <string name="empty_title">No downloads yet</string>
+    <string name="empty_body">Tap New download, or share a link to TurboDL from your browser.</string>
+
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="retry">Retry</string>
+    <string name="open">Open</string>
+    <string name="more">More</string>
+    <string name="pause_all">Pause all</string>
+    <string name="resume_all">Resume all</string>
+    <string name="clear_completed">Clear finished</string>
+    <string name="copy_link">Copy link</string>
+    <string name="download_again">Download again</string>
+    <string name="remove_from_list">Remove from list</string>
+    <string name="delete_file">Delete file</string>
+    <string name="delete">Delete</string>
+    <string name="delete_confirm">Delete %1$s from your phone?</string>
+    <string name="link_copied">Link copied</string>
+    <string name="no_app">No app can open this file</string>
+
+    <string name="status_queued">Waiting in queue</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="status_saving">Saving to Downloads…</string>
+    <string name="status_paused">Paused · %1$s</string>
+    <string name="status_completed">%1$s · Download/TurboDL</string>
+    <string name="status_failed">Failed: %1$s</string>
+    <string name="speed">%1$s/s</string>
+    <string name="time_left">%1$s left</string>
+    <plurals name="threads">
+        <item quantity="one">%d connection</item>
+        <item quantity="other">%d connections</item>
+    </plurals>
+
+    <string name="channel_progress">Download progress</string>
+    <string name="channel_done">Finished downloads</string>
+    <string name="notif_preparing">Starting downloads…</string>
+    <string name="notif_many">Downloading %1$d files</string>
+    <string name="notif_done">Download complete · %1$s</string>
+</resources>
