@@ -516,6 +516,52 @@ elif SCN == 8:   # together on a hill, hearts floating up, camera pulls back
     cam = cam_track((0.2, -1.0, 2.0), (0.6, -6.5, 3.6), (0, 3, 1.4), (0, 6, 1.6), lens=30, shake=0.015)
     lyrics(cam, col=(1.0, 0.92, 0.85))
 
+
+# ======================= "shaders" look: real sky, light rays, soft shadows, depth of field, motion blur =======================
+SKY = {1: (14, 205), 2: (22, 150), 4: (9, 230), 6: (6, 175), 7: (2.5, 180), 8: (2.0, 180)}
+HAZE = {1: 0.004, 2: 0.004, 3: 0.012, 4: 0.006, 5: 0.02, 6: 0.008, 7: 0.01, 8: 0.01}
+def shaders():
+    ee = sc.eevee
+    for k_, v_ in dict(use_volumetric_lights=True, use_volumetric_shadows=True, volumetric_tile_size="8", volumetric_samples=24,
+                       volumetric_end=120.0, shadow_cube_size="2048", shadow_cascade_size="4096", use_shadow_high_bitdepth=True,
+                       gtao_distance=2.0, gtao_factor=1.4, bloom_intensity=0.09, bloom_threshold=0.8, bloom_radius=6.5,
+                       use_ssr_refraction=True, use_motion_blur=True, motion_blur_shutter=0.45, taa_render_samples=16).items():
+        setattr_safe(ee, k_, v_)
+    nt = world.node_tree; bg = nt.nodes["Background"]
+    if SCN in SKY:
+        el, rot = SKY[SCN]
+        sky = nt.nodes.new("ShaderNodeTexSky"); sky.sky_type = "NISHITA"; sky.sun_elevation = math.radians(el); sky.sun_rotation = math.radians(rot)
+        sky.sun_intensity = 0.35; sky.altitude = 200; sky.air_density = 1.4; sky.dust_density = 2.5 if el < 8 else 1.0
+        nt.links.new(sky.outputs[0], bg.inputs[0]); bg.inputs[1].default_value = 0.22
+        for o in sc.objects:
+            if o.type == "LIGHT" and o.data.type == "SUN":
+                o.rotation_euler = (math.radians(90 - el), 0, math.radians(rot + 180)); o.data.angle = math.radians(1.5)
+    volume(HAZE.get(SCN, 0.005))
+    for m in bpy.data.materials:
+        if not m.use_nodes: continue
+        nodes = m.node_tree.nodes; tex = [n for n in nodes if n.type == "TEX_IMAGE"]
+        bsdf = nodes.get("Principled BSDF")
+        if tex and bsdf:
+            bump = nodes.new("ShaderNodeBump"); bump.inputs["Strength"].default_value = 0.35; bump.inputs["Distance"].default_value = 0.03
+            m.node_tree.links.new(tex[0].outputs[0], bump.inputs["Height"]); m.node_tree.links.new(bump.outputs[0], bsdf.inputs["Normal"])
+    cam = sc.camera; cam.data.dof.use_dof = True; cam.data.dof.focus_object = cam.constraints[0].target; cam.data.dof.aperture_fstop = 7.0
+if os.environ.get("SHADERS", "1") != "0": shaders()
+
+
+if os.environ.get("BTS"):   # Blender solid view of the same scene from a wide orbiting camera (behind the scenes)
+    import mathutils
+    sc.render.engine = "BLENDER_WORKBENCH"; sh = sc.display.shading
+    sh.light = "STUDIO"; sh.color_type = "RANDOM"; sh.show_cavity = True; sh.show_object_outline = True; sh.show_shadows = True
+    main = sc.camera; tg = main.constraints[0].target
+    cd = bpy.data.cameras.new("CV"); cd.lens = 22; cv = bpy.data.objects.new("CV", cd); sc.collection.objects.link(cv)
+    con = cv.constraints.new("TRACK_TO"); con.target = tg; con.track_axis = "TRACK_NEGATIVE_Z"; con.up_axis = "UP_Y"
+    r = 11.0
+    for f in (1, NF):
+        a = math.radians(-60 + 70 * (f - 1) / max(NF - 1, 1))
+        cv.location = (tg.location[0] + r * math.sin(a), tg.location[1] - r * math.cos(a), tg.location[2] + r * 0.55); cv.keyframe_insert("location", frame=f)
+    mk = voxel_obj("cam_marker", {(0, 0, 0): (0, 0, 0)}, 0.35, [mat_col("mk", (1, 0.2, 0.2))], origin=(-0.17, -0.17, -0.17)); mk.parent = main
+    sc.camera = cv
+
 os.makedirs(OUTD, exist_ok=True)
 if ONLY:
     for f in ONLY:
