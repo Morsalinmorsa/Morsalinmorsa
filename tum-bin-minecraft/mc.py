@@ -567,5 +567,5 @@ if ONLY:
     for f in ONLY:
         sc.frame_set(f); sc.render.filepath = os.path.join(OUTD, f"p_{f:04d}"); bpy.ops.render.render(write_still=True)
 else:
-    sc.render.filepath = os.path.join(OUTD, "f_####"); bpy.ops.render.render(animation=True)
+    sc.render.use_overwrite = not os.environ.get("RESUME"); sc.render.filepath = os.path.join(OUTD, "f_####"); bpy.ops.render.render(animation=True)
 print("SCENE_DONE", SCN, NF)
