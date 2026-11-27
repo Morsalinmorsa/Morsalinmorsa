@@ -498,7 +498,7 @@ elif SCN == 7:   # they meet on a bridge at sunset
     bank = {}; terrain_cells(bank, 10, 30, 2, 1, -24, -15, seed=2); terrain_cells(bank, 10, 30, 2, 1, 14, -15, seed=4)
     voxel_obj("banks", bank, 1.0, GR(), origin=(0, 0, -2))
     light("SUN", (0, 0, 10), 3.5, (1.0, 0.65, 0.4), rot=(math.radians(75), 0, math.radians(180)))
-    st = character("steve", STEVE, "steve", (-5, 0, 0), math.radians(-90)); al = character("alex", ALEX, "alex", (5, 0, 0), math.radians(90))
+    st = character("steve", STEVE, "steve", (-5, 0, 0), math.radians(90)); al = character("alex", ALEX, "alex", (5, 0, 0), math.radians(-90))
     mid = int(NF * 0.6)
     move(st, 1, mid, (-5, 0, 0), (-0.55, 0, 0)); swing(st, 1, mid, 0.5, 18)
     move(al, 1, mid, (5, 0, 0), (0.55, 0, 0)); swing(al, 1, mid, 0.5, 18)
