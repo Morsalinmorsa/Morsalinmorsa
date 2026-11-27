@@ -295,7 +295,7 @@ def face(ch, f, yaw):
 def look(ch, f, yaw=0.0, pitch=0.0):
     ch["head"].rotation_euler = (pitch, 0, yaw); ch["head"].keyframe_insert("rotation_euler", frame=f)
 def sit(ch):
-    for p in ("legL", "legR"): ch[p].rotation_euler = (math.radians(90), 0, 0)
+    for p in ("legL", "legR"): ch[p].rotation_euler = (math.radians(-90), 0, 0)
     ch["root"].location = (ch["root"].location[0], ch["root"].location[1], ch["root"].location[2] - 12 * PX)
 def wave(ch, f0, f1, arm="armR"):
     for f in range(f0, f1 + 1, 3):
@@ -351,6 +351,8 @@ def house(cells, x0, y0, w=5, d=5, h=4, wall=0, base=1, roof=2, glass=3, door=Tr
 
 # ======================= 3D lyrics that ride with the camera =======================
 def lyrics(cam, col=(1.0, 0.95, 0.85), emit=0.6, y0=-0.95, dist=4.0):
+    if not os.environ.get('LYR3D'):
+        sh = light('AREA', (0, 0, 0), 30, (1, 1, 1), size=3); sh.parent = cam; sh.location = (0, -1.5, -2.5); return
     m = mat_col("lyr", col, emit=emit, rough=0.4)
     words = L["words"]; n = len(words)
     rows = [list(range(n))] if n <= 4 else [list(range((n + 1) // 2)), list(range((n + 1) // 2, n))]
@@ -389,7 +391,7 @@ if SCN == 1:   # alone in a flower meadow at sunrise
     st = character("steve", STEVE, "steve", (-4, 0, 0), math.radians(90))
     move(st, 1, NF, (-4, 0, 0), (1.5, 0, 0)); swing(st, 1, NF, 0.55, 18)
     for f, y in ((1, 0), (50, -0.3), (NF, 0.2)): look(st, f, y)
-    cam = cam_track((-5.5, -6.0, 1.6), (1.5, -5.2, 1.4), (-4, 0, 1.2), (1.5, 0, 1.2), lens=30)
+    cam = cam_track((-1.0, -3.6, 1.7), (4.2, -3.0, 1.6), (-3.6, 0, 1.3), (1.3, 0, 1.3), lens=32)
     lyrics(cam)
 
 elif SCN == 2:   # he sees her under a pink cherry tree; she waves
@@ -399,13 +401,13 @@ elif SCN == 2:   # he sees her under a pink cherry tree; she waves
     voxel_obj("cherry", tc, 1.0, [mat_col("pinkleaf", (1.0, 0.62, 0.78), rough=0.8), mat_tex("log", "log")])
     falling("petal", 60, ((1, 9), (2, 9)), 5, 0, 0.07, mat_col("petal", (1.0, 0.7, 0.85), emit=0.3), 90, drift=1.0)
     light("SUN", (0, 0, 10), 3.5, (1.0, 0.88, 0.75), rot=(math.radians(55), 0, math.radians(-20)))
-    st = character("steve", STEVE, "steve", (-2.5, -1, 0), math.radians(60))
-    al = character("alex", ALEX, "alex", (4.2, 3.8, 0), math.radians(-120))
-    move(st, 1, 40, (-2.5, -1.5, 0), (-1.2, -0.6, 0)); swing(st, 1, 40, 0.5, 18)
+    st = character("steve", STEVE, "steve", (-2.5, -1.5, 0), math.radians(133))
+    al = character("alex", ALEX, "alex", (1.9, 2.3, 0), math.radians(-47))
+    move(st, 1, 60, (-2.5, -1.5, 0), (-0.6, 0.2, 0)); swing(st, 1, 60, 0.5, 18)
     look(st, 1, 0); look(st, 45, math.radians(-15), math.radians(-5)); look(al, 1, 0); look(al, 60, math.radians(10))
     wave(al, 55, 95)
-    rising_heart("h1", (-1.2, -0.6, 2.3), 70, NF)
-    cam = cam_track((-4.5, -5.5, 2.0), (-2.8, -3.6, 2.2), (0, 1, 1.3), (2.6, 2.8, 1.5), lens=34)
+    rising_heart("h1", (0.65, 1.25, 2.3), 70, NF)
+    cam = cam_track((-1.6, -4.4, 1.8), (-0.6, -3.4, 1.7), (0.2, 0.6, 1.3), (1.0, 1.6, 1.4), lens=30)
     lyrics(cam)
 
 elif SCN == 3:   # night, alone at a campfire
@@ -423,9 +425,10 @@ elif SCN == 3:   # night, alone at a campfire
         voxel_obj(f"st{i}", {(0, 0, 0): (0, 0, 0)}, 0.08, [mat_col(f"stc{i}", (1, 1, 1), emit=rnd.uniform(3, 12))], origin=(rnd.uniform(-30, 30), rnd.uniform(20, 35), rnd.uniform(4, 20)))
     voxel_obj("moon", {(x, 0, z): (0, 0, 0) for x in range(3) for z in range(3)}, 1.0, [mat_col("moon", (0.9, 0.92, 1.0), emit=8)], origin=(-8, 30, 12))
     light("SUN", (0, 0, 10), 0.15, (0.5, 0.6, 1.0), rot=(0.7, 0.2, 0.5))
-    st = character("steve", STEVE, "steve", (-0.6, -0.2, 0), math.radians(-70)); sit(st)
+    st = character("steve", STEVE, "steve", (-0.6, -0.2, 0), math.radians(113)); sit(st)
     for f, (y, p) in ((1, (0, 0.2)), (60, (0, -0.35)), (NF, (math.radians(15), -0.4))): look(st, f, y, p)
-    cam = cam_track((-3.5, -5.0, 1.4), (1.5, -5.2, 1.8), (0.2, 0.2, 0.7), (0.2, 0.2, 0.9), lens=32)
+    cam = cam_track((2.4, -2.6, 1.3), (1.4, -3.2, 1.6), (-0.3, 0.0, 0.8), (0.1, 0.1, 0.9), lens=32)
+    light('AREA', (-2, -3, 3), 40, (0.55, 0.65, 1.0), look_rot((-2, -3, 3), (-0.6, -0.2, 0.6)), 3)
     lyrics(cam, col=(1.0, 0.85, 0.6))
 
 elif SCN == 4:   # he builds a little house for his dream, block by block
@@ -444,7 +447,7 @@ elif SCN == 4:   # he builds a little house for his dream, block by block
         st["armR"].rotation_euler = (math.radians(-60), 0, 0); st["armR"].keyframe_insert("rotation_euler", frame=f)
         st["armR"].rotation_euler = (math.radians(-100), 0, 0); st["armR"].keyframe_insert("rotation_euler", frame=f + 5)
     look(st, 1, math.radians(20), -0.2); look(st, NF, math.radians(-20), -0.1)
-    cam = cam_track((-7, -6, 4.5), (3, -8, 3.5), (1.5, 3.5, 1.5), (1.5, 3.5, 1.8), lens=30)
+    cam = cam_track((-5.5, -4.5, 3.0), (2.5, -6.0, 2.6), (0.0, 2.2, 1.4), (1.0, 3.0, 1.7), lens=30)
     lyrics(cam)
 
 elif SCN == 5:   # alone in the rain under a street lamp
@@ -486,11 +489,11 @@ elif SCN == 7:   # they meet on a bridge at sunset
     world_color((1.0, 0.45, 0.25), 0.9)
     plane(80, (0, 0, -1.2), mat_col("water", (0.12, 0.28, 0.42), rough=0.04, metal=0.2))
     br = {(x, y, 0): (0, 0, 0) for x in range(-12, 13) for y in range(-1, 2)}
-    for x in range(-12, 13, 3): br[(x, 2, 1)] = (1, 1, 1)
+    for x in range(-12, 13, 3):
+        if abs(x) > 2: br[(x, 1, 1)] = (1, 1, 1)
     voxel_obj("bridge", br, 1.0, [mat_tex("plank", "plank"), mat_tex("log", "log")], origin=(0, 0, -1))
     bank = {}; terrain_cells(bank, 10, 30, 2, 1, -24, -15, seed=2); terrain_cells(bank, 10, 30, 2, 1, 14, -15, seed=4)
     voxel_obj("banks", bank, 1.0, GR(), origin=(0, 0, -2))
-    voxel_obj("sun", {(x, 0, z): (0, 0, 0) for x in range(4) for z in range(4)}, 1.6, [mat_col("sun", (1.0, 0.75, 0.4), emit=14)], origin=(-3.2, 40, 2))
     light("SUN", (0, 0, 10), 3.5, (1.0, 0.65, 0.4), rot=(math.radians(75), 0, math.radians(180)))
     st = character("steve", STEVE, "steve", (-5, 0, 0), math.radians(-90)); al = character("alex", ALEX, "alex", (5, 0, 0), math.radians(90))
     mid = int(NF * 0.6)
@@ -498,7 +501,7 @@ elif SCN == 7:   # they meet on a bridge at sunset
     move(al, 1, mid, (5, 0, 0), (0.55, 0, 0)); swing(al, 1, mid, 0.5, 18)
     look(st, mid, 0, -0.1); look(al, mid, 0, -0.1)
     rising_heart("h1", (0, 0, 2.1), mid + 5, NF, 0.07)
-    cam = cam_track((0, -9, 1.8), (0, -5.5, 1.5), (0, 0, 1.1), (0, 0, 1.2), lens=32)
+    cam = cam_track((-3.0, -8.0, 2.0), (-1.2, -4.6, 1.7), (-1.5, 0, 1.2), (0, 0, 1.4), lens=34)
     lyrics(cam, col=(1.0, 0.92, 0.8))
 
 elif SCN == 8:   # together on a hill, hearts floating up, camera pulls back
@@ -506,14 +509,12 @@ elif SCN == 8:   # together on a hill, hearts floating up, camera pulls back
     cells = {}; terrain_cells(cells, 40, 30, 1, 1.2, -20, 4, seed=8)
     box(cells, -4, -4, 0, 9, 7, 3, (0, 1, 1))
     voxel_obj("hill", cells, 1.0, GR(), origin=(0, 0, -3))
-    voxel_obj("sun", {(x, 0, z): (0, 0, 0) for x in range(4) for z in range(4)}, 1.6, [mat_col("sun", (1.0, 0.75, 0.4), emit=14)], origin=(-3.2, 45, 4))
-    for i in range(6): cloud(f"cl{i}", rnd.uniform(-20, 15), rnd.uniform(25, 40), rnd.uniform(6, 10), mat_col("cloud", (1, 0.85, 0.8), rough=0.9), 2)
     light("SUN", (0, 0, 10), 3.0, (1.0, 0.6, 0.4), rot=(math.radians(80), 0, math.radians(180)))
     st = character("steve", STEVE, "steve", (-0.4, 2.9, 0.75), math.radians(180)); sit(st)
     al = character("alex", ALEX, "alex", (0.4, 2.9, 0.75), math.radians(180)); sit(al)
-    look(st, 1, 0); look(st, 40, math.radians(-30)); look(al, 1, 0); look(al, 50, math.radians(25))
+    look(st, 1, 0); look(st, 30, math.radians(-40)); look(al, 1, 0); look(al, 40, math.radians(40))
     for i in range(6): rising_heart(f"h{i}", (rnd.uniform(-0.8, 0.8), 3.2, 2.0), 8 + i * 12, min(NF, 8 + i * 12 + 50), 0.05)
-    cam = cam_track((0.2, -1.0, 2.0), (0.6, -6.5, 3.6), (0, 3, 1.4), (0, 6, 1.6), lens=30, shake=0.015)
+    cam = cam_track((1.7, 0.4, 1.5), (2.4, -2.8, 2.3), (0, 2.9, 1.0), (0, 4.5, 1.3), lens=32, shake=0.015)
     lyrics(cam, col=(1.0, 0.92, 0.85))
 
 
@@ -522,10 +523,10 @@ SKY = {1: (14, 205), 2: (22, 150), 4: (9, 230), 6: (6, 175), 7: (2.5, 180), 8: (
 HAZE = {1: 0.004, 2: 0.004, 3: 0.012, 4: 0.006, 5: 0.02, 6: 0.008, 7: 0.01, 8: 0.01}
 def shaders():
     ee = sc.eevee
-    for k_, v_ in dict(use_volumetric_lights=True, use_volumetric_shadows=True, volumetric_tile_size="8", volumetric_samples=24,
+    for k_, v_ in dict(use_volumetric_lights=True, use_volumetric_shadows=True, volumetric_tile_size="8", volumetric_samples=16,
                        volumetric_end=120.0, shadow_cube_size="2048", shadow_cascade_size="4096", use_shadow_high_bitdepth=True,
                        gtao_distance=2.0, gtao_factor=1.4, bloom_intensity=0.09, bloom_threshold=0.8, bloom_radius=6.5,
-                       use_ssr_refraction=True, use_motion_blur=True, motion_blur_shutter=0.45, taa_render_samples=16).items():
+                       use_ssr_refraction=True, use_motion_blur=True, motion_blur_shutter=0.45, taa_render_samples=10).items():
         setattr_safe(ee, k_, v_)
     nt = world.node_tree; bg = nt.nodes["Background"]
     if SCN in SKY:
@@ -555,7 +556,7 @@ if os.environ.get("BTS"):   # Blender solid view of the same scene from a wide o
     main = sc.camera; tg = main.constraints[0].target
     cd = bpy.data.cameras.new("CV"); cd.lens = 22; cv = bpy.data.objects.new("CV", cd); sc.collection.objects.link(cv)
     con = cv.constraints.new("TRACK_TO"); con.target = tg; con.track_axis = "TRACK_NEGATIVE_Z"; con.up_axis = "UP_Y"
-    r = 11.0
+    r = 7.5
     for f in (1, NF):
         a = math.radians(-60 + 70 * (f - 1) / max(NF - 1, 1))
         cv.location = (tg.location[0] + r * math.sin(a), tg.location[1] - r * math.cos(a), tg.location[2] + r * 0.55); cv.keyframe_insert("location", frame=f)

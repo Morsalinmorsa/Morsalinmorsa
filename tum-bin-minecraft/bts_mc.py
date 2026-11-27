@@ -9,7 +9,7 @@ PREVIEW = [float(v) for v in a[a.index("--preview") + 1].split(",")] if "--previ
 O, FPS, DUR = 1080, 30, 30.0
 SONG_START = 0.0
 NAMES = ["", "flower meadow", "cherry tree", "campfire night", "building a house", "rain and street lamp", "village run", "bridge at sunset", "together on the hill"]
-TOOK = {int(m.group(1)): int(m.group(2)) for m in re.finditer(r"scene (\d) took (\d+)s", open(os.path.join(BD, "renders", "render.log")).read())}
+TOOK = {int(m.group(1)): int(m.group(2)) for m in re.finditer(r"scene (\d) took (\d+)s", open(os.path.join(BD, os.environ.get("RD", "renders"), "render.log")).read())}
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"; MONOB = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 f_card = ImageFont.truetype(MONO, 140); f_lab = ImageFont.truetype(MONOB, 26); f_inf = ImageFont.truetype(MONO, 22); f_end = ImageFont.truetype(MONO, 46)
 def ease(t): t = min(max(t, 0.0), 1.0); return 1 - (1 - t) ** 3
@@ -34,8 +34,8 @@ def card(t, final=False):
 def split(t):
     i = min(int((t - SEG0) / SEGL), len(SCN) - 1); k = SCN[i]; lt = (t - SEG0) - i * SEGL
     img = Image.new("RGB", (O, O), (22, 22, 24)); d = ImageDraw.Draw(img)
-    fin, n = load(os.path.join(BD, "renders", f"out_{k}"), int(lt / SEGL * 1.0 * len(os.listdir(os.path.join(BD, "renders", f"out_{k}")))) + 1)
-    vp, _ = load(os.path.join(BD, "renders", f"view_{k}"), int(lt / SEGL * len(os.listdir(os.path.join(BD, "renders", f"view_{k}")))) + 1)
+    fin, n = load(os.path.join(BD, os.environ.get("RD", "renders"), f"out_{k}"), int(lt / SEGL * 1.0 * len(os.listdir(os.path.join(BD, os.environ.get("RD", "renders"), f"out_{k}")))) + 1)
+    vp, _ = load(os.path.join(BD, os.environ.get("RD", "renders"), f"view_{k}"), int(lt / SEGL * len(os.listdir(os.path.join(BD, os.environ.get("RD", "renders"), f"view_{k}")))) + 1)
     fi = int(lt / SEGL * n) + 1
     img.paste(fin.resize((530, 530)), (6, 230)); img.paste(vp.resize((530, 530)), (544, 230))
     d.text((12, 200), "Camera (final render)", font=f_lab, fill=(230, 230, 235)); d.text((550, 200), "Blender view (same scene)", font=f_lab, fill=(230, 230, 235))
